@@ -32,7 +32,7 @@ public class ArchiveService {
   }
 
   private ZipOutputStream makeZipOutputStream(String filename) throws FileNotFoundException {
-    File file = new File(config.getZipFilePath(), filename);
+    File file = new File(config.getZipFilePath(), filename + ".zip");
     return new ZipOutputStream(new FileOutputStream(file));
   }
 
