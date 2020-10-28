@@ -1,5 +1,6 @@
 package ee.pnb.cgitest;
 
+import ee.pnb.cgitest.archive.ArchiveService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ public class CgiTestController {
 
     private static final int DEFAULT_FILE_COUNT = 100_000;
 
-//    private final ZipFileBuildService buildService;
+    private final ArchiveService archiveService;
 
     @PutMapping(value = "build/{count}")
     public ResponseEntity<String> buildFiles(
@@ -25,6 +26,7 @@ public class CgiTestController {
         if (fileCount.isPresent()) {
             buildFiles = fileCount.get();
         }
+        archiveService.zip(buildFiles);
         return ResponseEntity.ok().body(buildFiles + " files will be built");
     }
 
