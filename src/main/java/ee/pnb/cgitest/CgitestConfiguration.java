@@ -8,4 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Getter @Setter
 public class CgitestConfiguration {
 
+  private String zipFilePath;
+
 }
