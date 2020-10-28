@@ -1,4 +1,4 @@
-package ee.pnb.cgitest.pack;
+package ee.pnb.cgitest.archive;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class CreateZipServiceTest {
+class ZipServiceTest {
 
   private static final String RANDOM_TEXT = "lorem ipsum";
   private static final String FILE_NAME = "file";
@@ -33,11 +33,11 @@ class CreateZipServiceTest {
   @Captor private ArgumentCaptor<ZipEntry> zipEntryCaptor;
   @Captor private ArgumentCaptor<byte[]> dataCaptor;
 
-  private CreateZipService createZipService;
+  private ZipService zipService;
 
   @BeforeEach
   void init() {
-    createZipService = new CreateZipService(randomTextService);
+    zipService = new ZipService(randomTextService);
   }
 
   @Nested
@@ -53,7 +53,7 @@ class CreateZipServiceTest {
       String givenText = givenRandomText();
 
       // when
-      boolean actualResult = createZipService.createArchive(zipOutputStream, FILE_NAME);
+      boolean actualResult = zipService.createArchive(zipOutputStream, FILE_NAME);
 
       // then
       then(zipOutputStream).should().putNextEntry(zipEntryCaptor.capture());
@@ -75,7 +75,7 @@ class CreateZipServiceTest {
       givenException();
 
       // when
-      boolean actualResult = createZipService.createArchive(zipOutputStream, FILE_NAME);
+      boolean actualResult = zipService.createArchive(zipOutputStream, FILE_NAME);
 
       // then
       assertThat(actualResult).isFalse();

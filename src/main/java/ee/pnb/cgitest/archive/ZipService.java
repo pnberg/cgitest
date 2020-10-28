@@ -1,4 +1,4 @@
-package ee.pnb.cgitest.pack;
+package ee.pnb.cgitest.archive;
 
 import ee.pnb.cgitest.CgitestException;
 import ee.pnb.cgitest.RandomTextService;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CreateZipService {
+public class ZipService {
 
   private final RandomTextService randomTextService;
 
