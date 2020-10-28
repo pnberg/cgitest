@@ -1,5 +1,6 @@
 package ee.pnb.cgitest.pack;
 
+import ee.pnb.cgitest.CgitestException;
 import ee.pnb.cgitest.RandomTextService;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
@@ -15,12 +16,18 @@ public class CreateZipService {
 
   private final RandomTextService randomTextService;
 
-  public void createArchive(ZipOutputStream zipOutputStream, String filename) {
-    String content = randomTextService.generateRandomText();
-    makeZipFile(zipOutputStream, filename, content);
+  public boolean createArchive(ZipOutputStream zipOutputStream, String filename) {
+    try {
+      String content = randomTextService.generateRandomText();
+      makeZipFile(zipOutputStream, filename, content);
+      return true;
+    } catch (CgitestException e) {
+      return false;
+    }
   }
 
-  private void makeZipFile(ZipOutputStream out, String filename, String content) {
+  private void makeZipFile(ZipOutputStream out, String filename, String content)
+      throws CgitestException {
     try {
       ZipEntry e = new ZipEntry(filename);
       out.putNextEntry(e);
@@ -30,7 +37,8 @@ public class CreateZipService {
       out.closeEntry();
     }
     catch(Exception e) {
-      log.error("Exception when making zipfile", e);
+      log.error("Exception caught when making zipfile", e);
+      throw new CgitestException(e.getMessage());
     }
     finally {
       if (out != null) {
