@@ -1,10 +1,13 @@
 package ee.pnb.cgitest.archive;
 
 import ee.pnb.cgitest.CgitestConfiguration;
+import ee.pnb.cgitest.CgitestException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.stream.IntStream;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +18,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ArchiveService {
 
-  private final CgitestConfiguration config;
   private final ZipService zipService;
+  private final UnzipService unzipService;
+  private final CgitestConfiguration config;
 
   public void zip(int fileCount) {
     IntStream.range(0, fileCount).forEach(i -> {
@@ -29,6 +33,18 @@ public class ArchiveService {
         log.error("Error {} composing file {}", e.getMessage(), i);
       }
     });
+  }
+
+  public void unzip(File zipfile) {
+    try {
+      ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipfile));
+      File unzipFolder = new File(config.getUnzipDirectoryPath());
+      unzipService.extract(zipInputStream, unzipFolder);
+    }
+    catch (FileNotFoundException | CgitestException e) {
+      log.error("Error {} extracting file {}", e.getMessage(), zipfile.getName());
+    }
+
   }
 
   private ZipOutputStream makeZipOutputStream(String filename) throws FileNotFoundException {

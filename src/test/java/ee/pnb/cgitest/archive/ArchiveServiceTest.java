@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ArchiveServiceTest {
 
   @Mock private ZipService zipService;
+  @Mock private UnzipService unzipService;
 
   @Captor private ArgumentCaptor<String> nameCaptor;
 
@@ -28,7 +29,7 @@ class ArchiveServiceTest {
   @BeforeEach
   void init() {
     CgitestConfiguration config = new CgitestConfiguration();
-    archiveService = new ArchiveService(zipService, config);
+    archiveService = new ArchiveService(zipService, unzipService, config);
   }
 
   @Test

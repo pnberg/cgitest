@@ -11,5 +11,6 @@ import org.springframework.context.annotation.Configuration;
 public class CgitestConfiguration {
 
   private String zipFilePath;
+  private String unzipDirectoryPath;
 
 }
