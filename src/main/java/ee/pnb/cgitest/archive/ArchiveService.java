@@ -1,6 +1,7 @@
 package ee.pnb.cgitest.archive;
 
 import ee.pnb.cgitest.CgitestConfiguration;
+import ee.pnb.cgitest.CgitestException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,9 +38,10 @@ public class ArchiveService {
   public void unzip(File zipfile) {
     try {
       ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipfile));
-      unzipService.extract(zipInputStream);
+      File unzipFolder = new File(config.getUnzipDirectoryPath());
+      unzipService.extract(zipInputStream, unzipFolder);
     }
-    catch (FileNotFoundException e) {
+    catch (FileNotFoundException | CgitestException e) {
       log.error("Error {} extracting file {}", e.getMessage(), zipfile.getName());
     }
 

@@ -1,28 +1,27 @@
 package ee.pnb.cgitest.archive;
 
-import ee.pnb.cgitest.CgitestConfiguration;
+import ee.pnb.cgitest.CgitestException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UnzipService {
 
-  private final CgitestConfiguration config;
-
-  public boolean extract(ZipInputStream zipInputStream) {
+  public boolean extract(ZipInputStream zipInputStream, File unzipFolder) throws CgitestException {
     byte[] buffer = new byte[1024];
     try {
       ZipEntry ze = zipInputStream.getNextEntry();
       while(ze != null){
         String fileName = ze.getName();
-        File newFile = new File(config.getUnzipDirectoryPath() + File.separator + fileName);
-        System.out.println("Unzipping to "+newFile.getAbsolutePath());
+        File newFile = new File(unzipFolder, fileName);
         //create directories for sub directories in zip
         new File(newFile.getParent()).mkdirs();
         FileOutputStream fos = new FileOutputStream(newFile);
@@ -46,11 +45,8 @@ public class UnzipService {
         zipInputStream.close();
       }
       catch (IOException e) {
-        e.printStackTrace();
+        log.error("Exception caught when closing zip input stream", e);
       }
-      finally {
-      }
-
     }
     return true;
   }
