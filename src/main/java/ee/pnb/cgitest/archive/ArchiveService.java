@@ -41,7 +41,7 @@ public class ArchiveService {
       File unzipFolder = new File(config.getUnzipDirectoryPath());
       unzipService.extract(zipInputStream, unzipFolder);
     }
-    catch (FileNotFoundException | CgitestException e) {
+    catch (FileNotFoundException e) {
       log.error("Error {} extracting file {}", e.getMessage(), zipfile.getName());
     }
 

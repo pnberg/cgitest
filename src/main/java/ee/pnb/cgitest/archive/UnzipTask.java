@@ -1,22 +1,19 @@
 package ee.pnb.cgitest.archive;
 
 import ee.pnb.cgitest.CgitestConfiguration;
-import ee.pnb.cgitest.CgitestException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.zip.ZipInputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class UnzipTask implements Runnable {
 
-  private final ZipFilePool pool;
+  private final FilePool pool;
   private final UnzipService unzipService;
   private final CgitestConfiguration config;
 

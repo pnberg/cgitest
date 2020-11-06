@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Queue;
 import java.util.stream.Stream;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,11 +18,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ZipFilePool {
+public class FilePool {
 
-  private final CgitestConfiguration config;
-
-  Queue<File> zipFiles;
+  @Getter
+  private Queue<File> zipFiles;
 
   public void loadPool() throws CgitestException {
     try (Stream<Path> paths = Files.walk(Paths.get(config.getZipFilePath()))) {
