@@ -1,6 +1,8 @@
 package ee.pnb.cgitest.archive;
 
+import static ee.pnb.cgitest.archive.FilePool.NO_FILES_IN_POOL_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import ee.pnb.cgitest.CgitestException;
 import java.io.BufferedWriter;
@@ -8,14 +10,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
 class FilePoolTest {
 
   private static final String FILENAME_1 = "file1.txt";
@@ -45,13 +47,30 @@ class FilePoolTest {
     pool.loadPool(zipFolder);
 
     // then
-    assertThat(pool.getZipFiles()).hasSize(2);
-    assertThat(pool.getZipFiles()).extracting(File::getName)
+    assertThat(pool.getFiles()).hasSize(2);
+    assertThat(pool.getFiles()).extracting(File::getName)
         .containsExactlyInAnyOrder(FILENAME_1, FILENAME_2);
   }
 
   @Test
-  void getNextZipFile() {
+  @DisplayName("Given pool with two files " +
+               "when next file is asked " +
+               "then return correct file")
+  void getNextZipFile() throws CgitestException {
+    // given
+    File file1 = new File(FILENAME_1);
+    File file2 = new File(FILENAME_2);
+    givenPoolWithFiles(file1, file2);
+
+    // when then
+    File actualNextFile = pool.getNextFile();
+    assertThat(actualNextFile).isEqualTo(file1);
+    actualNextFile = pool.getNextFile();
+    assertThat(actualNextFile).isEqualTo(file2);
+
+    Throwable actualException = catchThrowable(() -> pool.getNextFile());
+    assertThat(actualException).isExactlyInstanceOf(CgitestException.class)
+        .hasMessage(NO_FILES_IN_POOL_FOUND);
   }
 
   private void addFileToFolder(Path folder, String filename) throws IOException {
@@ -59,6 +78,11 @@ class FilePoolTest {
     BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));
     writer.append("Lorem ipsum");
     writer.close();
+  }
+
+  private void givenPoolWithFiles(File... files) {
+    Queue<File> poolFiles = new LinkedList<>(Arrays.asList(files));
+    pool.setFiles(poolFiles);
   }
 
 }

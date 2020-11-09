@@ -12,6 +12,7 @@ import java.util.Queue;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -20,14 +21,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class FilePool {
 
-  @Getter
-  private Queue<File> zipFiles;
+  public static final String NO_FILES_IN_POOL_FOUND = "No files in pool found";
+
+  @Setter @Getter // visible for testing
+  private Queue<File> files;
 
   public void loadPool() throws CgitestException {
     try (Stream<Path> paths = Files.walk(Paths.get(config.getZipFilePath()))) {
       paths
           .filter(Files::isRegularFile)
-          .forEach(filePath -> zipFiles.add(filePath.toFile()));
+          .forEach(filePath -> files.add(filePath.toFile()));
     }
     catch (IOException e) {
       log.error("Error caught when loading files to pool", e);
@@ -35,12 +38,12 @@ public class FilePool {
     }
   }
 
-  public File getNextZipFile() throws CgitestException {
-    if (zipFiles.isEmpty()) {
-      throw new CgitestException("No zip files in pool found");
+  public File getNextFile() throws CgitestException {
+    if (files.isEmpty()) {
+      throw new CgitestException(NO_FILES_IN_POOL_FOUND);
     }
     else {
-      return zipFiles.remove();
+      return files.remove();
     }
   }
 

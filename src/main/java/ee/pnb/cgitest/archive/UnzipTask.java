@@ -22,7 +22,7 @@ public class UnzipTask implements Runnable {
     // get next zip from pool
     try {
       File unzipFolder = new File(config.getUnzipDirectoryPath());
-      File zipFile = pool.getNextZipFile();
+      File zipFile = pool.getNextFile();
       ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile));
       boolean unzipResult = unzipService.extract(zipInputStream, unzipFolder);
       if (unzipResult) {
@@ -30,7 +30,7 @@ public class UnzipTask implements Runnable {
       }
     }
     catch (Exception e) {
-      e.printStackTrace();
+      log.error("Error when unzipping file : ", e);
     }
   }
 }
