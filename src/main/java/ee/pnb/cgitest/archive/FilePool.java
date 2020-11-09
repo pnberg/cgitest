@@ -1,13 +1,11 @@
 package ee.pnb.cgitest.archive;
 
-import ee.pnb.cgitest.CgitestConfiguration;
 import ee.pnb.cgitest.CgitestException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.stream.Stream;
 import lombok.Getter;
@@ -26,8 +24,9 @@ public class FilePool {
   @Setter @Getter // visible for testing
   private Queue<File> files;
 
-  public void loadPool() throws CgitestException {
-    try (Stream<Path> paths = Files.walk(Paths.get(config.getZipFilePath()))) {
+  public void loadPool(Path zipFileFolder) throws CgitestException {
+    files = new LinkedList<>();
+    try (Stream<Path> paths = Files.walk(zipFileFolder)) {
       paths
           .filter(Files::isRegularFile)
           .forEach(filePath -> files.add(filePath.toFile()));
