@@ -1,6 +1,5 @@
 package ee.pnb.cgitest.archive;
 
-import ee.pnb.cgitest.CgitestException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UnzipService {
 
-  public boolean extract(ZipInputStream zipInputStream, File unzipFolder) throws CgitestException {
+  public boolean extract(ZipInputStream zipInputStream, File unzipFolder) {
     byte[] buffer = new byte[1024];
     try {
       ZipEntry ze = zipInputStream.getNextEntry();
