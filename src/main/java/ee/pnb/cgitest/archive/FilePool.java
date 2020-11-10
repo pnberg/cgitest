@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class FilePool {
 
-  public static final String NO_FILES_IN_POOL_FOUND = "No files in pool found";
-
   @Setter @Getter // visible for testing
   private Queue<File> files;
 
@@ -37,9 +35,9 @@ public class FilePool {
     }
   }
 
-  public File getNextFile() throws CgitestException {
+  public File getNextFile() {
     if (files.isEmpty()) {
-      throw new CgitestException(NO_FILES_IN_POOL_FOUND);
+      return null;
     }
     else {
       return files.remove();

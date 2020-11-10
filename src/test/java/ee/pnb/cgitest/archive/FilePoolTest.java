@@ -1,8 +1,6 @@
 package ee.pnb.cgitest.archive;
 
-import static ee.pnb.cgitest.archive.FilePool.NO_FILES_IN_POOL_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 
 import ee.pnb.cgitest.CgitestException;
 import java.io.BufferedWriter;
@@ -55,8 +53,8 @@ class FilePoolTest {
   @Test
   @DisplayName("Given pool with two files " +
                "when next file is asked " +
-               "then return correct file")
-  void getNextZipFile() throws CgitestException {
+               "then return correct result")
+  void getNextZipFile() {
     // given
     File file1 = new File(FILENAME_1);
     File file2 = new File(FILENAME_2);
@@ -67,10 +65,9 @@ class FilePoolTest {
     assertThat(actualNextFile).isEqualTo(file1);
     actualNextFile = pool.getNextFile();
     assertThat(actualNextFile).isEqualTo(file2);
+    actualNextFile = pool.getNextFile();
+    assertThat(actualNextFile).isNull();
 
-    Throwable actualException = catchThrowable(() -> pool.getNextFile());
-    assertThat(actualException).isExactlyInstanceOf(CgitestException.class)
-        .hasMessage(NO_FILES_IN_POOL_FOUND);
   }
 
   private void addFileToFolder(Path folder, String filename) throws IOException {

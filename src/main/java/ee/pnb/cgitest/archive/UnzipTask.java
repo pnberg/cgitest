@@ -19,18 +19,21 @@ public class UnzipTask implements Runnable {
 
   @Override
   public void run() {
-    // get next zip from pool
-    try {
-      File unzipFolder = new File(config.getUnzipDirectoryPath());
-      File zipFile = pool.getNextFile();
-      ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile));
-      boolean unzipResult = unzipService.extract(zipInputStream, unzipFolder);
-      if (unzipResult) {
-        log.info("File {} unzipped successfully", zipFile.getName());
+    File unzipFolder = new File(config.getUnzipDirectoryPath());
+
+    File zipFile;
+    while ((zipFile = pool.getNextFile()) != null) {
+      try {
+        ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile));
+        boolean unzipResult = unzipService.extract(zipInputStream, unzipFolder);
+        if (unzipResult) {
+          log.info("File {} unzipped successfully", zipFile.getName());
+        }
+      }
+      catch (Exception e) {
+        log.error("Error when unzipping file : ", e);
       }
     }
-    catch (Exception e) {
-      log.error("Error when unzipping file : ", e);
-    }
+
   }
 }
