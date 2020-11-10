@@ -1,9 +1,6 @@
 package ee.pnb.cgitest;
 
 import ee.pnb.cgitest.archive.ArchiveService;
-import ee.pnb.cgitest.archive.FilePool;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -21,8 +18,6 @@ public class CgiTestController {
     public static final Integer DEFAULT_FILE_COUNT = 100_000;
 
     private final ArchiveService archiveService;
-    private final FilePool filePool;
-    private final CgitestConfiguration config;
 
     @GetMapping(value = "build", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> buildFiles(
@@ -33,23 +28,16 @@ public class CgiTestController {
         return ResponseEntity.ok().body(fileCount + " files are built");
     }
 
-    @RequestMapping(value = "load", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> loadPool() {
+    @RequestMapping(value = "unzip", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> unzip() {
         try {
-            Path zipFileFolder = Paths.get(config.getZipFilePath());
-            filePool.loadPool(zipFileFolder);
-            return ResponseEntity.ok().body("Zip files pool is loaded");
+            archiveService.unzipAll();
+            return ResponseEntity.ok().body("Zip files extracted");
         }
         catch (CgitestException e) {
             return ResponseEntity.ok()
                 .body("Error " + e.getMessage() + " when loading zip files to pool");
         }
-    }
-
-    @RequestMapping(value = "unzip", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> unzip() {
-        archiveService.unzipAll();
-        return ResponseEntity.ok().body("Zip files extracted");
     }
 
 }
