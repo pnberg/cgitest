@@ -19,12 +19,11 @@ public class UnzipTask implements Runnable {
 
   @Override
   public void run() {
-    File unzipFolder = new File(config.getUnzipDirectoryPath());
+    File unzipFolder = config.getUnzipFolder().toFile();
 
     File zipFile;
     while ((zipFile = pool.getNextFile()) != null) {
-      try {
-        ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile));
+      try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile))) {
         boolean unzipResult = unzipService.extract(zipInputStream, unzipFolder);
         if (unzipResult) {
           log.info("File {} unzipped successfully", zipFile.getName());

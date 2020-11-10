@@ -1,9 +1,10 @@
 package ee.pnb.cgitest.archive;
 
 import ee.pnb.cgitest.CgitestConfiguration;
+import ee.pnb.cgitest.CgitestException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.stream.IntStream;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
@@ -24,26 +25,42 @@ public class ArchiveService {
 
   public void zip(int fileCount) {
     IntStream.range(0, fileCount).forEach(i -> {
+      ZipOutputStream zipOutputStream = null;
       try {
         String filename = "file_" + i;
-        ZipOutputStream zipOutputStream = makeZipOutputStream(filename);
+        zipOutputStream = makeZipOutputStream(filename);
         zipService.createArchive(zipOutputStream, filename);
       }
-      catch (FileNotFoundException e) {
+      catch (Exception e) {
         log.error("Error {} composing file {}", e.getMessage(), i);
+      }
+      finally {
+        try {
+          zipOutputStream.close();
+        }
+        catch (IOException e) {}
       }
     });
   }
 
-  public void unzipAll() {
-    for (int i = 0; i < 5; i++) {
-      taskExecutor.execute(new UnzipTask(filePool, unzipService, config));
+  public void unzipAll() throws CgitestException {
+    try {
+      filePool.loadPool(config.getZipFolder());
+
+      for (int i = 0; i < 5; i++) {
+        taskExecutor.execute(new UnzipTask(filePool, unzipService, config));
+      }
+    }
+    catch (Exception e) {
+      log.error("Exception caught when unzipping files: ", e);
+      throw new CgitestException(e.getMessage());
     }
   }
 
-  private ZipOutputStream makeZipOutputStream(String filename) throws FileNotFoundException {
-    File file = new File(config.getZipFilePath(), filename + ".zip");
-    return new ZipOutputStream(new FileOutputStream(file));
+  private ZipOutputStream makeZipOutputStream(String filename) throws IOException {
+    File file = new File(config.getZipFolder().toFile(), filename + ".zip");
+
+    return new ZipOutputStream(new FileOutputStream(file, false));
   }
 
 }
