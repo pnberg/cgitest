@@ -15,12 +15,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.task.TaskExecutor;
 
 @ExtendWith(MockitoExtension.class)
 class ArchiveServiceTest {
 
   @Mock private ZipService zipService;
   @Mock private UnzipService unzipService;
+  @Mock private FilePool filePool;
+  @Mock private TaskExecutor taskExecutor;
 
   @Captor private ArgumentCaptor<String> nameCaptor;
 
@@ -29,7 +32,7 @@ class ArchiveServiceTest {
   @BeforeEach
   void init() {
     CgitestConfiguration config = new CgitestConfiguration();
-    archiveService = new ArchiveService(zipService, unzipService, config);
+    archiveService = new ArchiveService(zipService, unzipService, filePool, taskExecutor, config);
   }
 
   @Test

@@ -46,4 +46,10 @@ public class CgiTestController {
         }
     }
 
+    @RequestMapping(value = "unzip", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> unzip() {
+        archiveService.unzipAll();
+        return ResponseEntity.ok().body("Zip files extracted");
+    }
+
 }
