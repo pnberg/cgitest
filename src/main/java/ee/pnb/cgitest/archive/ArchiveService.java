@@ -1,16 +1,14 @@
 package ee.pnb.cgitest.archive;
 
 import ee.pnb.cgitest.CgitestConfiguration;
-import ee.pnb.cgitest.CgitestException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.stream.IntStream;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +18,8 @@ public class ArchiveService {
 
   private final ZipService zipService;
   private final UnzipService unzipService;
+  private final FilePool filePool;
+  private final TaskExecutor taskExecutor;
   private final CgitestConfiguration config;
 
   public void zip(int fileCount) {
@@ -35,16 +35,10 @@ public class ArchiveService {
     });
   }
 
-  public void unzip(File zipfile) {
-    try {
-      ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipfile));
-      File unzipFolder = new File(config.getUnzipDirectoryPath());
-      unzipService.extract(zipInputStream, unzipFolder);
+  public void unzipAll() {
+    for (int i = 0; i < 5; i++) {
+      taskExecutor.execute(new UnzipTask(filePool, unzipService, config));
     }
-    catch (FileNotFoundException e) {
-      log.error("Error {} extracting file {}", e.getMessage(), zipfile.getName());
-    }
-
   }
 
   private ZipOutputStream makeZipOutputStream(String filename) throws FileNotFoundException {

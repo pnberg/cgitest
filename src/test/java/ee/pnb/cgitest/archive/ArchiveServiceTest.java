@@ -15,12 +15,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.task.TaskExecutor;
 
 @ExtendWith(MockitoExtension.class)
 class ArchiveServiceTest {
 
   @Mock private ZipService zipService;
   @Mock private UnzipService unzipService;
+  @Mock private FilePool filePool;
+  @Mock private TaskExecutor taskExecutor;
+
+  @Captor private ArgumentCaptor<Runnable> taskCaptor;
 
   @Captor private ArgumentCaptor<String> nameCaptor;
 
@@ -29,7 +34,7 @@ class ArchiveServiceTest {
   @BeforeEach
   void init() {
     CgitestConfiguration config = new CgitestConfiguration();
-    archiveService = new ArchiveService(zipService, unzipService, config);
+    archiveService = new ArchiveService(zipService, unzipService, filePool, taskExecutor, config);
   }
 
   @Test
@@ -49,4 +54,18 @@ class ArchiveServiceTest {
     List<String> actualNames = nameCaptor.getAllValues();
     assertThat(actualNames).containsExactly("file_0", "file_1", "file_2");
   }
+
+  @Test
+  @DisplayName("When unzipAll is called " +
+               "then execute five instances of UnzipTask")
+  void unzipAll() {
+    // when
+    archiveService.unzipAll();
+
+    // then
+    then(taskExecutor).should(times(5)).execute(taskCaptor.capture());
+    assertThat(taskCaptor.getAllValues())
+        .allSatisfy(task -> assertThat(task).isInstanceOf(UnzipTask.class));
+  }
+
 }
