@@ -86,6 +86,20 @@ class CgiTestControllerTest {
     assertThat(actualPath).isEqualTo(Paths.get(ZIP_FOLDER));
   }
 
+  @Test
+  @DisplayName("When load endpoint is called " +
+               "then call ArchiveService#unzipAll")
+  void unzip() throws Exception {
+    // when
+    ResultActions actualResult = this.mockMvc.perform(get(API_URI + "/unzip"));
+
+    // then
+    actualResult
+        .andExpect(status().isOk());
+
+    then(archiveService).should().unzipAll();
+  }
+
   private static Stream<Arguments> provideCounts() {
     return Stream.of(
         Arguments.of("10", 10),

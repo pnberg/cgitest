@@ -25,6 +25,8 @@ class ArchiveServiceTest {
   @Mock private FilePool filePool;
   @Mock private TaskExecutor taskExecutor;
 
+  @Captor private ArgumentCaptor<Runnable> taskCaptor;
+
   @Captor private ArgumentCaptor<String> nameCaptor;
 
   private ArchiveService archiveService;
@@ -52,4 +54,18 @@ class ArchiveServiceTest {
     List<String> actualNames = nameCaptor.getAllValues();
     assertThat(actualNames).containsExactly("file_0", "file_1", "file_2");
   }
+
+  @Test
+  @DisplayName("When unzipAll is called " +
+               "then execute five instances of UnzipTask")
+  void unzipAll() {
+    // when
+    archiveService.unzipAll();
+
+    // then
+    then(taskExecutor).should(times(5)).execute(taskCaptor.capture());
+    assertThat(taskCaptor.getAllValues())
+        .allSatisfy(task -> assertThat(task).isInstanceOf(UnzipTask.class));
+  }
+
 }

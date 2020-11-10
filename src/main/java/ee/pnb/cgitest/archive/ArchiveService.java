@@ -2,11 +2,9 @@ package ee.pnb.cgitest.archive;
 
 import ee.pnb.cgitest.CgitestConfiguration;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.stream.IntStream;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,17 +33,6 @@ public class ArchiveService {
         log.error("Error {} composing file {}", e.getMessage(), i);
       }
     });
-  }
-
-  public void unzip(File zipfile) {
-    try {
-      ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipfile));
-      File unzipFolder = new File(config.getUnzipDirectoryPath());
-      unzipService.extract(zipInputStream, unzipFolder);
-    }
-    catch (FileNotFoundException e) {
-      log.error("Error {} extracting file {}", e.getMessage(), zipfile.getName());
-    }
   }
 
   public void unzipAll() {
