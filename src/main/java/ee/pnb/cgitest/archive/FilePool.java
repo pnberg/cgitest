@@ -44,4 +44,8 @@ public class FilePool {
     }
   }
 
+  public int getSize() {
+    return files.size();
+  }
+
 }

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import ee.pnb.cgitest.CgitestConfiguration;
+import ee.pnb.cgitest.report.ReportService;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,6 +40,7 @@ class UnzipTaskTest {
 
   @Mock private FilePool pool;
   @Mock private UnzipService unzipService;
+  @Mock private ReportService reportService;
   @Mock private CgitestConfiguration config;
 
   @Captor private ArgumentCaptor<File> fileCaptor;
@@ -49,7 +51,7 @@ class UnzipTaskTest {
   void init() {
     zipFolder.resolve(ZIP_FOLDER);
     unzipFolder.resolve(UNZIP_FOLDER);
-    unzipTask = new UnzipTask(pool, unzipService, config);
+    unzipTask = new UnzipTask(pool, unzipService, reportService, config);
   }
 
   @Test

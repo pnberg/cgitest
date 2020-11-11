@@ -2,10 +2,12 @@ package ee.pnb.cgitest;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.inOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ee.pnb.cgitest.archive.ArchiveService;
+import ee.pnb.cgitest.report.ReportService;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,6 +37,7 @@ class CgiTestControllerTest {
 
   @MockBean private ArchiveService archiveService;
   @MockBean private CgitestConfiguration config;
+  @MockBean private ReportService reportService;
 
   @DisplayName("Given default file count value set in configuration " +
                "when build endpoint is called " +
@@ -56,8 +60,9 @@ class CgiTestControllerTest {
   }
 
   @Test
-  @DisplayName("When load endpoint is called " +
-               "then call ArchiveService#unzipAll")
+  @DisplayName("When unzip endpoint is called " +
+               "then start with new report, call ArchiveService#unzipAll " +
+               "and finish unzipping report")
   void unzip() throws Exception {
     // when
     ResultActions actualResult = this.mockMvc.perform(get(API_URI + "/unzip"));
@@ -66,7 +71,10 @@ class CgiTestControllerTest {
     actualResult
         .andExpect(status().isOk());
 
-    then(archiveService).should().unzipAll();
+    InOrder unzipOrder = inOrder(reportService, archiveService);
+    then(reportService).should(unzipOrder).startReport();
+    then(archiveService).should(unzipOrder).unzipAll();
+    then(reportService).should(unzipOrder).finishReport();
   }
 
   private static Stream<Arguments> provideCounts() {

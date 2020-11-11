@@ -1,6 +1,7 @@
 package ee.pnb.cgitest.archive;
 
 import ee.pnb.cgitest.CgitestConfiguration;
+import ee.pnb.cgitest.report.ReportService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.zip.ZipInputStream;
@@ -15,17 +16,18 @@ public class UnzipTask implements Runnable {
 
   private final FilePool pool;
   private final UnzipService unzipService;
+  private final ReportService reportService;
   private final CgitestConfiguration config;
 
   @Override
   public void run() {
     File unzipFolder = config.getUnzipFolder().toFile();
-
     File zipFile;
     while ((zipFile = pool.getNextFile()) != null) {
       try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile))) {
         boolean unzipResult = unzipService.extract(zipInputStream, unzipFolder);
         if (unzipResult) {
+          reportService.addUnzippedFile(zipFile.length());
           log.info("File {} unzipped successfully", zipFile.getName());
         }
       }
