@@ -15,7 +15,7 @@ public class ReportService {
   private final Clock clock;
 
   @Getter private UnzipReport report = null;
-  private LocalDateTime reportStart;
+  LocalDateTime reportStart;  // visible for testing
 
   public void startReport() throws CgitestException {
     if (report != null) {
