@@ -34,7 +34,7 @@ public class ReportService {
   }
 
   public UnzipReport finishReport() {
-    report.setUnzipTimeInSeconds(ChronoUnit.SECONDS.between(reportStart, LocalDateTime.now(clock)));
+    report.setUnzipTimeInMillis(ChronoUnit.MILLIS.between(reportStart, LocalDateTime.now(clock)));
     UnzipReport result = report;
     this.report = null;
     this.reportStart = null;

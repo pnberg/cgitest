@@ -22,6 +22,7 @@ class ReportServiceTest {
 
   private static final LocalDateTime REPORT_START_TIME = LocalDateTime.of(2020, 10, 15, 12, 31, 16);
   private static final LocalDateTime REPORT_END_TIME = LocalDateTime.of(2020, 10, 15, 12, 31, 20);
+  private static final int FOUR_SECONDS_IN_MILLIS = 4 * 1000;
 
   @Mock private Clock clock;
   private ReportService reportService;
@@ -81,7 +82,7 @@ class ReportServiceTest {
     UnzipReport actualReport = reportService.finishReport();
 
     // then
-    assertThat(actualReport.getUnzipTimeInSeconds()).isEqualTo(4);
+    assertThat(actualReport.getUnzipTimeInMillis()).isEqualTo(FOUR_SECONDS_IN_MILLIS);
   }
 
   private void givenCurrentTime(Clock clock, LocalDateTime now) {

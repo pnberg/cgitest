@@ -7,7 +7,7 @@ public class UnzipReport {
 
   private int poolFiles;
   private int unzippedFiles;
-  private long unzipTimeInSeconds;
+  private long unzipTimeInMillis;
   private long unzippedFileSizeInBytes;
 
   public void addUnzippedFile(long filesize) {
