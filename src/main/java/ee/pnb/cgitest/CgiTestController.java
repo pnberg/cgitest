@@ -1,6 +1,8 @@
 package ee.pnb.cgitest;
 
 import ee.pnb.cgitest.archive.ArchiveService;
+import ee.pnb.cgitest.report.ReportService;
+import ee.pnb.cgitest.report.UnzipReport;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -17,6 +19,7 @@ public class CgiTestController {
 
     private final ArchiveService archiveService;
     private final CgitestConfiguration config;
+    private final ReportService reportService;
 
     @GetMapping(value = "build", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> buildFiles(
@@ -30,8 +33,10 @@ public class CgiTestController {
     @RequestMapping(value = "unzip", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> unzip() {
         try {
+            reportService.startReport();
             archiveService.unzipAll();
-            return ResponseEntity.ok().body("Zip files extracted");
+            UnzipReport report = reportService.finishReport();
+            return ResponseEntity.ok().body("Zip files extracted: " + report.toString());
         }
         catch (CgitestException e) {
             return ResponseEntity.ok()

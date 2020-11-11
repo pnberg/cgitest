@@ -2,6 +2,9 @@ package ee.pnb.cgitest;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Clock;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -21,14 +24,13 @@ public class CgitestConfiguration {
   @Getter private int defaultThreadCount;
 
   @Bean
-  public TaskExecutor threadPoolTaskExecutor() {
-    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(5);
-    executor.setMaxPoolSize(5);
-    executor.setThreadNamePrefix("default_task_executor_thread");
-    executor.initialize();
+  public ExecutorService threadPoolTaskExecutor() {
+    return Executors.newFixedThreadPool(defaultThreadCount);
+  }
 
-    return executor;
+  @Bean
+  public Clock clock() {
+    return Clock.systemDefaultZone();
   }
 
   public Path getZipFolder() {
