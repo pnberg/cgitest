@@ -1,5 +1,6 @@
 package ee.pnb.cgitest;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,18 +28,21 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 class CgiTestControllerTest {
 
   private static final String API_URI = "/zipfiles";
+  private static final int DEFAULT_FILE_COUNT = 100_000;
 
   @Autowired private MockMvc mockMvc;
 
   @MockBean private ArchiveService archiveService;
+  @MockBean private CgitestConfiguration config;
 
-  @DisplayName("Given file count value " +
+  @DisplayName("Given default file count value set in configuration " +
                "when build endpoint is called " +
                "then call ArchiveService#zip with correct file count")
   @ParameterizedTest
   @MethodSource("provideCounts")
   void buildFiles(String givenFiles, int expectedFileCount) throws Exception {
     // given
+    given(config.getDefaultFileCount()).willReturn(DEFAULT_FILE_COUNT);
     MockHttpServletRequestBuilder requestBuilder = givenBuildRequest(givenFiles);
 
     // when
@@ -68,7 +72,7 @@ class CgiTestControllerTest {
   private static Stream<Arguments> provideCounts() {
     return Stream.of(
         Arguments.of("10", 10),
-        Arguments.of(null, CgiTestController.DEFAULT_FILE_COUNT)
+        Arguments.of(null, DEFAULT_FILE_COUNT)
     );
   }
 

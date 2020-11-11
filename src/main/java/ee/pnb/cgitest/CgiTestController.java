@@ -15,15 +15,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class CgiTestController {
 
-    public static final Integer DEFAULT_FILE_COUNT = 100_000;
-
     private final ArchiveService archiveService;
+    private final CgitestConfiguration config;
 
     @GetMapping(value = "build", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> buildFiles(
         @RequestParam(name = "count", required = false) Optional<Integer> count
     ) {
-        int fileCount = count.orElse(DEFAULT_FILE_COUNT);
+        int fileCount = count.orElse(config.getDefaultFileCount());
         archiveService.zip(fileCount);
         return ResponseEntity.ok().body(fileCount + " files are built");
     }

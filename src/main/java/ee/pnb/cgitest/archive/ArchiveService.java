@@ -47,7 +47,7 @@ public class ArchiveService {
     try {
       filePool.loadPool(config.getZipFolder());
 
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < config.getDefaultThreadCount(); i++) {
         taskExecutor.execute(new UnzipTask(filePool, unzipService, config));
       }
     }

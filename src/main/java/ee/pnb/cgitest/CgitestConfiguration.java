@@ -2,6 +2,7 @@ package ee.pnb.cgitest;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,8 @@ public class CgitestConfiguration {
 
   private String zipDirectoryPath;
   private String unzipDirectoryPath;
+  @Getter private int defaultFileCount;
+  @Getter private int defaultThreadCount;
 
   @Bean
   public TaskExecutor threadPoolTaskExecutor() {

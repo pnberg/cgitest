@@ -24,6 +24,8 @@ import org.springframework.core.task.TaskExecutor;
 @ExtendWith(MockitoExtension.class)
 class ArchiveServiceTest {
 
+  private static final int DEFAULT_THREAD_COUNT = 5;
+
   @TempDir Path zipFolder;
   @TempDir Path unzipFolder;
 
@@ -65,14 +67,15 @@ class ArchiveServiceTest {
   }
 
   @Test
-  @DisplayName("Given folder for zipped files set in configuration " +
-               "and files in the folder " +
+  @DisplayName("Given folder for zipped files set in configuration, " +
+               "and value for thread count set in properties " +
                "when unzipAll is called " +
                "then populate pool with files " +
-               "and execute five instances of UnzipTask")
+               "and execute expected instances of UnzipTask")
   void unzipAll() throws CgitestException {
     // given
     givenZipFolder();
+    given(config.getDefaultThreadCount()).willReturn(DEFAULT_THREAD_COUNT);
 
     // when
     archiveService.unzipAll();
@@ -80,7 +83,7 @@ class ArchiveServiceTest {
     // then
     then(filePool).should().loadPool(config.getZipFolder());
 
-    then(taskExecutor).should(times(5)).execute(taskCaptor.capture());
+    then(taskExecutor).should(times(DEFAULT_THREAD_COUNT)).execute(taskCaptor.capture());
     assertThat(taskCaptor.getAllValues())
         .allSatisfy(task -> assertThat(task).isInstanceOf(UnzipTask.class));
   }
